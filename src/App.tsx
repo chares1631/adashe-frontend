@@ -95,7 +95,15 @@ function CreateGroup() {
       <button onClick={handleCreate} disabled={isPending || isLoading}>
         {isPending ? "Confirm in wallet..." : isLoading ? "Creating..." : "Create Group"}
       </button>
-      {isSuccess && <p className="success">Group created! <a href="https://testnet.arcscan.app" target="_blank" rel="noopener noreferrer">View on ArcScan</a></p>}
+      {error && <p className="error">{error}</p>}
+        {isSuccess && createdGroupId && (
+          <div className="success">
+            <p>Group created! Your Group ID is: <strong style={{color:"#a855f7",fontSize:"1.2rem"}}>{createdGroupId}</strong></p>
+            <p style={{fontSize:"0.85rem"}}>Share this ID with members so they can join.</p>
+            <button onClick={() => navigator.clipboard.writeText(createdGroupId)} style={{marginTop:"6px",padding:"6px 14px",background:"#a855f7",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer"}}>Copy Group ID</button>
+            <a href="https://testnet.arcscan.app" target="_blank" rel="noopener noreferrer" style={{display:"block",marginTop:"8px"}}>View on ArcScan</a>
+          </div>
+        )}
     </div>
   )
 }
