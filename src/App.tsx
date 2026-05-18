@@ -66,12 +66,19 @@ function CreateGroup() {
   const [amount, setAmount] = useState("10")
   const [days, setDays] = useState("1")
   const [members, setMembers] = useState("3")
-  const { writeContract, data: txHash, isPending } = useWriteContract()
+  const { writeContract, data: txHash, isPending, error: writeError } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
+  const { data: groupCount, refetch: refetchCount } = useReadContract({
+    address: CONTRACTS.ADASHE as `0x${string}`,
+    abi: ADASHE_ABI,
+    functionName: "groupCount",
+  })
+  const createdGroupId = isSuccess && groupCount ? groupCount.toString() : null
+  if (isSuccess && groupCount) refetchCount()
   const handleCreate = () => {
     console.log("Create Group clicked!")
     writeContract({
-      address: CONTRACTS.ADASHE as "0x${string}",
+      address: CONTRACTS.ADASHE as `0x${string}`,
       abi: ADASHE_ABI,
       functionName: "createGroup",
       args: [parseUnits(amount, 6), BigInt(Number(days) * 86400), BigInt(members)],
@@ -96,15 +103,15 @@ function CreateGroup() {
       <button onClick={handleCreate} disabled={isPending || isLoading}>
         {isPending ? "Confirm in wallet..." : isLoading ? "Creating..." : "Create Group"}
       </button>
-      {(error || writeError) && <p className="error">{error || writeError?.message}</p>}
-        {isSuccess && createdGroupId && (
-          <div className="success">
-            <p>Group created! Your Group ID is: <strong style={{color:"#a855f7",fontSize:"1.2rem"}}>{createdGroupId}</strong></p>
-            <p style={{fontSize:"0.85rem"}}>Share this ID with members so they can join.</p>
-            <button onClick={() => navigator.clipboard.writeText(createdGroupId)} style={{marginTop:"6px",padding:"6px 14px",background:"#a855f7",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer"}}>Copy Group ID</button>
-            <a href="https://testnet.arcscan.app" target="_blank" rel="noopener noreferrer" style={{display:"block",marginTop:"8px"}}>View on ArcScan</a>
-          </div>
-        )}
+      {writeError && <p className="error">{writeError.message}</p>}
+      {isSuccess && createdGroupId && (
+        <div className="success">
+          <p>Group created! Your Group ID is: <strong style={{color:"#a855f7",fontSize:"1.2rem"}}>{createdGroupId}</strong></p>
+          <p style={{fontSize:"0.85rem"}}>Share this ID with members so they can join.</p>
+          <button onClick={() => navigator.clipboard.writeText(createdGroupId)} style={{marginTop:"6px",padding:"6px 14px",background:"#a855f7",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer"}}>Copy Group ID</button>
+          <a href="https://testnet.arcscan.app" target="_blank" rel="noopener noreferrer" style={{display:"block",marginTop:"8px"}}>View on ArcScan</a>
+        </div>
+      )}
     </div>
   )
 }
