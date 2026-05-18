@@ -69,6 +69,7 @@ function CreateGroup() {
   const { writeContract, data: txHash, isPending } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
   const handleCreate = () => {
+    console.log("Create Group clicked!")
     writeContract({
       address: CONTRACTS.ADASHE as "0x${string}",
       abi: ADASHE_ABI,
