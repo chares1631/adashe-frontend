@@ -95,7 +95,7 @@ function CreateGroup() {
       <button onClick={handleCreate} disabled={isPending || isLoading}>
         {isPending ? "Confirm in wallet..." : isLoading ? "Creating..." : "Create Group"}
       </button>
-      {error && <p className="error">{error}</p>}
+      {(error || writeError) && <p className="error">{error || writeError?.message}</p>}
         {isSuccess && createdGroupId && (
           <div className="success">
             <p>Group created! Your Group ID is: <strong style={{color:"#a855f7",fontSize:"1.2rem"}}>{createdGroupId}</strong></p>
